@@ -98,16 +98,16 @@ final class WPPlugin
 }
 
 // Get CleverMegaMenu instance.
-$clevermenu = new WPPlugin(get_option(WPPlugin::OPTION_NAME));
+$plugin = new WPPlugin(get_option(WPPlugin::OPTION_NAME));
 
 // Register activation hook.
-register_activation_hook(__FILE__, array($clevermenu, 'activate'));
+register_activation_hook(__FILE__, array($plugin, 'activate'));
 
 // Register deactivation hook.
-register_deactivation_hook(__FILE__, array($clevermenu, 'deactivate'));
+register_deactivation_hook(__FILE__, array($plugin, 'deactivate'));
 
 // Register installation hook.
-add_action('plugins_loaded', array($clevermenu, 'install'), 10, 0);
+add_action('plugins_loaded', array($plugin, 'install'), 10, 0);
 
 // Register uninstallation hook.
 register_uninstall_hook(__FILE__, 'WPPlugin::uninstall');
