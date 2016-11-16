@@ -111,3 +111,6 @@ add_action('plugins_loaded', array($plugin, 'install'), 10, 0);
 
 // Register uninstallation hook.
 register_uninstall_hook(__FILE__, 'WPPlugin::uninstall');
+
+// Unset plugin instance from global space.
+unset($plugin);
