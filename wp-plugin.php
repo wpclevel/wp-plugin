@@ -17,31 +17,72 @@ final class WPPlugin
     const VERSION = '1.0.0';
 
     /**
-     * Option name
+     * Option key
      *
      * @var    string
      */
-    const SETTING_KEY = 'wp_plugin_settings';
+    const OPTION_NAME = 'wp_plugin_options';
 
     /**
-     * Plugin settings
+     * Base DIR
+     *
+     * @var    string
+     */
+    private $basedir;
+
+    /**
+     * Base URI
+     *
+     * @var    string
+     */
+    private $baseuri;
+
+    /**
+     * Modules
      *
      * @var    array
      */
-    private $settings;
+    private $modules;
 
     /**
      * Constructor
      */
-    function __construct($settings)
+    function __construct()
     {
-        $this->settings = $settings ? (array)$settings : array();
-        $this->settings['basedir']  = wp_normalize_path(__DIR__ . '/');
-        $this->settings['baseuri']  = preg_replace('/^http(s)?:/', '', plugins_url('/', __FILE__));
+        $this->modules = array();
+        $this->basedir = __DIR__ . '/';
+        $this->baseuri = preg_replace('/^http(s)?:/', '', plugins_url('/', __FILE__));
 
+        add_action('plugins_loaded', array($this, '_install'), 10, 0);
         add_action('activate_wp-plugin/wp-plugin.php', array($this, '_activate'));
         add_action('deactivate_wp-plugin/wp-plugin.php', array($this, '_deactivate'));
-        add_action('plugins_loaded', array($this, '_install'), 10, 0);
+    }
+
+    /**
+     * Getter
+     *
+     * A shortcut to find an entry by its identifier and returns it.
+     *
+     * @throws    InvalidArgumentException
+     *
+     * @return    object
+     */
+    function __get($id)
+    {
+        if (!is_string($id)) {
+            throw new InvalidArgumentException(__('Invalid module identifier!', 'wp-plugin'));
+        }
+
+        if ('basedir' === $id) {
+            return $this->basedir;
+        } elseif ('baseuri' === $id) {
+            return $this->baseuri;
+        } else {
+            if (!isset($this->modules[$id])) {
+                throw new InvalidArgumentException(sprintf(__('Module "%s" not found!', 'wp-plugin'), $id));
+            }
+            return $this->modules[$id];
+        }
     }
 
     /**
@@ -51,7 +92,7 @@ final class WPPlugin
      *
      * @see    https://developer.wordpress.org/reference/functions/register_activation_hook/
      *
-     * @param    bool    $network    Whether activating this plugin on network or a single site.
+     * @param    bool    $network    Whether to activate this plugin on network or a single site.
      */
     function _activate($network)
     {
@@ -61,11 +102,9 @@ final class WPPlugin
             exit($e->getMessage());
         }
 
-        if (!$this->settings) {
-            add_option(self::SETTING_KEY, array(
+        update_option(self::OPTION_NAME, array(
 
-            ));
-        }
+        ));
     }
 
     /**
@@ -77,8 +116,14 @@ final class WPPlugin
      */
     function _install()
     {
-        load_plugin_textdomain('wp-plugin', false, $this->settings['basedir'] . 'i18n');
+        // Make sure translation is available.
+        load_plugin_textdomain('wp-plugin', false, $this->basedir . 'i18n');
 
+        // Load resources.
+        // require $this->basedir . 'something.php';
+
+        // Initialize modules.
+        $this->modules['options'] = new ArrayObject(get_option(self::OPTION_NAME), ArrayObject::ARRAY_AS_PROPS);
     }
 
     /**
@@ -88,7 +133,7 @@ final class WPPlugin
      *
      * @see    https://developer.wordpress.org/reference/functions/register_deactivation_hook/
      *
-     * @param    bool    $network    Whether deactivating this plugin on network or a single site.
+     * @param    bool    $network    Whether to deactivate this plugin on network or a single site.
      */
     function _deactivate($network)
     {
@@ -97,6 +142,8 @@ final class WPPlugin
 
     /**
      * Pre-activation check
+     *
+     * @throws    Exception
      */
     private function preActivate()
     {
@@ -104,11 +151,11 @@ final class WPPlugin
             throw new Exception('This plugin requires PHP version 5.6 at least. Please update to the latest version for better performance and security!');
         }
 
-        if (version_compare($GLOBALS['wp_version'], '4.4', '<')) {
-            throw new Exception('This plugin requires WordPress version 4.4 at least. Please update to the latest version for better performance and security!');
+        if (version_compare($GLOBALS['wp_version'], '4.6', '<')) {
+            throw new Exception('This plugin requires WordPress version 4.6 at least. Please update to the latest version for better performance and security!');
         }
     }
 }
 
 // Initialize plugin.
-return new WPPlugin(get_option(WPPlugin::SETTING_KEY));
+return new WPPlugin();
