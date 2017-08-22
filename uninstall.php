@@ -2,6 +2,6 @@
 /**
  * Uninstaller
  *
- * @package WP_Plugin
+ * @package    WP_Plugin
  */
-delete_option(WPPlugin::OPTION_NAME);
+delete_option(WPPlugin::SETTING_KEY);
