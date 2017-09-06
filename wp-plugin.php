@@ -56,7 +56,7 @@ final class SamplePlugin
     {
         $this->modules = array();
         $this->basedir = __DIR__ . '/';
-        $this->baseuri = preg_replace('/^http(s)?:/', '', plugins_url('/', __FILE__));
+        $this->baseuri = preg_replace('/^http(s)?:/', '', plugins_url('/', __FILE__)); // in case of caching.
 
         add_action('plugins_loaded', array($this, '_install'), 10, 0);
         add_action('activate_wp-plugin/wp-plugin.php', array($this, '_activate'));
