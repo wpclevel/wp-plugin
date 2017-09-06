@@ -4,4 +4,4 @@
  *
  * @package    WP_Plugin
  */
-delete_option(WPPlugin::OPTION_NAME);
+delete_option(Wp\Plugin\SamplePlugin::OPTION_NAME);
