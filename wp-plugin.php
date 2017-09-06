@@ -1,13 +1,17 @@
-<?php
+<?php namespace WP\Plugin;
 /**
- * Plugin Name: WP Plugin
+ * Plugin Name: Sample Plugin
  * Plugin URI:  https://github.com/i30/wp-plugin
  * Description: My simple WordPress plugin boilerplate.
  * Author:      i30
  * Version:     1.0.0
  * Text Domain: wp-plugin
  */
-final class WPPlugin
+use Exception;
+use ArrayObject;
+use InvalidArgumentException;
+
+final class SamplePlugin
 {
     /**
      * Version
@@ -21,7 +25,7 @@ final class WPPlugin
      *
      * @var    string
      */
-    const OPTION_NAME = 'wp_plugin_options';
+    const OPTION_NAME = 'sample_plugin_options';
 
     /**
      * Base DIR
@@ -120,7 +124,7 @@ final class WPPlugin
         load_plugin_textdomain('wp-plugin', false, $this->basedir . 'i18n');
 
         // Load resources.
-        // require $this->basedir . 'something.php';
+        // require $this->basedir . 'src/Modules/Something.php';
 
         // Initialize modules.
         $this->modules['options'] = new ArrayObject(get_option(self::OPTION_NAME), ArrayObject::ARRAY_AS_PROPS);
@@ -154,8 +158,12 @@ final class WPPlugin
         if (version_compare($GLOBALS['wp_version'], '4.6', '<')) {
             throw new Exception('This plugin requires WordPress version 4.6 at least. Please update to the latest version for better performance and security!');
         }
+
+        // if (!is_writable(WP_CONTENT_DIR)) {
+        //     throw new Exception('WordPress content directory is not writable. Please correct permission of the directory before activating this plugin!');
+        // }
     }
 }
 
 // Initialize plugin.
-return new WPPlugin();
+return new SamplePlugin();
