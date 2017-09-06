@@ -6,6 +6,7 @@
  * Author:      i30
  * Version:     1.0.0
  * Text Domain: wp-plugin
+ * Requires PHP: 5.6
  */
 use Exception;
 use ArrayObject;
