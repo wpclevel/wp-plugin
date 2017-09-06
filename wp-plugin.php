@@ -1,4 +1,4 @@
-<?php namespace WP\Plugin;
+<?php namespace Wp\Plugin;
 /**
  * Plugin Name: Sample Plugin
  * Plugin URI:  https://github.com/i30/wp-plugin
