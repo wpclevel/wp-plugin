@@ -1,51 +1,58 @@
-<?php namespace Wp\Plugin;
+<?php namespace Wp\Plugins\SamplePlugin;
+
 /**
  * Plugin Name: Sample Plugin
  * Plugin URI:  https://github.com/i30/wp-plugin
- * Description: My simple WordPress plugin boilerplate.
+ * Description: My WordPress plugin boilerplate.
  * Author:      i30
  * Version:     1.0.0
  * Text Domain: wp-plugin
  * Requires PHP: 5.6
  */
+
 use Exception;
 use ArrayObject;
 use InvalidArgumentException;
 
-final class SamplePlugin
+/**
+ * Core
+ *
+ * Plugin container.
+ */
+final class Core
 {
     /**
      * Version
      *
-     * @var    string
+     * @var  string
      */
     const VERSION = '1.0.0';
 
     /**
      * Option key
      *
-     * @var    string
+     * @var  string
      */
-    const OPTION_NAME = 'sample_plugin_options';
+    const OPTION_NAME = 'sample_plugin_settings';
 
     /**
      * Base DIR
      *
-     * @var    string
+     * @var  string
      */
     private $basedir;
 
     /**
      * Base URI
      *
-     * @var    string
+     * @var  string
      */
     private $baseuri;
 
     /**
      * Modules
      *
-     * @var    array
+     * @var  array
      */
     private $modules;
 
@@ -54,13 +61,13 @@ final class SamplePlugin
      */
     function __construct()
     {
-        $this->modules = array();
-        $this->basedir = __DIR__ . '/';
-        $this->baseuri = preg_replace('/^http(s)?:/', '', plugins_url('/', __FILE__)); // in case of caching.
+        $this->modules  = [];
+        $this->basedir  = __DIR__ . '/';
+        $this->baseuri  = str_replace(['http:', 'https:'], '', plugins_url('/', __FILE__));
 
-        add_action('plugins_loaded', array($this, '_install'), 10, 0);
-        add_action('activate_wp-plugin/wp-plugin.php', array($this, '_activate'));
-        add_action('deactivate_wp-plugin/wp-plugin.php', array($this, '_deactivate'));
+        add_filter('plugins_loaded', [$this, '_install'], 10, 0);
+        add_filter('activate_wp-plugin/wp-plugin.php', [$this, '_activate']);
+        add_filter('deactivate_wp-plugin/wp-plugin.php', [$this, '_deactivate']);
     }
 
     /**
@@ -68,36 +75,27 @@ final class SamplePlugin
      *
      * A shortcut to find an entry by its identifier and returns it.
      *
-     * @throws    InvalidArgumentException
+     * @throws  InvalidArgumentException
      *
-     * @return    object
+     * @return  object
      */
     function __get($id)
     {
-        if (!is_string($id)) {
-            throw new InvalidArgumentException(__('Invalid module identifier!', 'wp-plugin'));
-        }
-
-        if ('basedir' === $id) {
-            return $this->basedir;
-        } elseif ('baseuri' === $id) {
-            return $this->baseuri;
+        if (isset($this->$prop)) {
+            return $this->$prop;
         } else {
-            if (!isset($this->modules[$id])) {
-                throw new InvalidArgumentException(sprintf(__('Module "%s" not found!', 'wp-plugin'), $id));
-            }
-            return $this->modules[$id];
+            throw new InvalidArgumentException(__('Invalid property!', 'wp-plugin'));
         }
     }
 
     /**
      * Do activation
      *
-     * @internal    Used as a callback. DO NOT CALL THIS METHOD DIRECTLY!
+     * @internal  Used as a callback.
      *
-     * @see    https://developer.wordpress.org/reference/functions/register_activation_hook/
+     * @see  https://developer.wordpress.org/reference/functions/register_activation_hook/
      *
-     * @param    bool    $network    Whether to activate this plugin on network or a single site.
+     * @param  bool  $network  Whether to activate this plugin on network or a single site.
      */
     function _activate($network)
     {
@@ -107,17 +105,17 @@ final class SamplePlugin
             exit($e->getMessage());
         }
 
-        update_option(self::OPTION_NAME, array(
+        update_option(self::OPTION_NAME, [
 
-        ));
+        ]);
     }
 
     /**
      * Do installation
      *
-     * @internal    Used as a callback. DO NOT CALL THIS METHOD DIRECTLY!
+     * @internal  Used as a callback.
      *
-     * @see    https://developer.wordpress.org/reference/hooks/plugins_loaded/
+     * @see  https://developer.wordpress.org/reference/hooks/plugins_loaded/
      */
     function _install()
     {
@@ -125,20 +123,20 @@ final class SamplePlugin
         load_plugin_textdomain('wp-plugin', false, $this->basedir . 'i18n');
 
         // Load resources.
-        // require $this->basedir . 'src/Modules/Something.php';
+        require $this->basedir . 'src/Modules/Options.php';
 
         // Initialize modules.
-        $this->modules['options'] = new ArrayObject(get_option(self::OPTION_NAME), ArrayObject::ARRAY_AS_PROPS);
+        $this->modules['options'] = new Options(get_option(self::OPTION_NAME), ArrayObject::ARRAY_AS_PROPS);
     }
 
     /**
      * Do deactivation
      *
-     * @internal    Used as a callback. DO NOT CALL THIS METHOD DIRECTLY!
+     * @internal  Used as a callback.
      *
-     * @see    https://developer.wordpress.org/reference/functions/register_deactivation_hook/
+     * @see  https://developer.wordpress.org/reference/functions/register_deactivation_hook/
      *
-     * @param    bool    $network    Whether to deactivate this plugin on network or a single site.
+     * @param  bool  $network  Whether to deactivate this plugin on network or a single site.
      */
     function _deactivate($network)
     {
@@ -148,16 +146,16 @@ final class SamplePlugin
     /**
      * Pre-activation check
      *
-     * @throws    Exception
+     * @throws  Exception
      */
     private function preActivate()
     {
         if (version_compare(PHP_VERSION, '5.6', '<')) {
-            throw new Exception('This plugin requires PHP version 5.6 at least. Please update to the latest version for better performance and security!');
+            throw new Exception(sprintf('This plugin requires PHP version %s at least!', '5.6'));
         }
 
         if (version_compare($GLOBALS['wp_version'], '4.6', '<')) {
-            throw new Exception('This plugin requires WordPress version 4.6 at least. Please update to the latest version for better performance and security!');
+            throw new Exception(sprintf('This plugin requires WordPress version %s at least!', '4.6'));
         }
 
         // if (!is_writable(WP_CONTENT_DIR)) {
@@ -167,4 +165,4 @@ final class SamplePlugin
 }
 
 // Initialize plugin.
-return new SamplePlugin();
+return new Core();

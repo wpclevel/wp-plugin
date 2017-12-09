@@ -1,33 +1,34 @@
-<?php namespace Wp\Plugin\SamplePlugin\Modules;
+<?php namespace Wp\Plugins\SamplePlugin;
+
+use Wp\Plugins\SamplePlugin\Core;
+
 /**
  * SamplePostType
  */
-use Wp\Plugin\SamplePlugin as Plugin;
-
 final class SamplePostType
 {
     /**
      * Type
      *
-     * @var   string
+     * @var  string
      */
     const TYPE = 'sample-post-type';
 
     /**
      * Plugin container
      *
-     * @var    object
+     * @var  object
      */
-    private $plugin;
+    private $container;
 
     /**
      * Constructor
      */
-    function __construct(Plugin $plugin)
+    function __construct(Core $container)
     {
-        $this->plugin = $plugin;
+        $this->container = $container;
 
-        add_action('init', array($this, '_register'), 10, 0);
+        add_action('init', [$this, '_register'], 10, 0);
         add_filter('post_updated_messages', [$this, '_filterUpdatedMessages'], PHP_INT_MAX);
     }
 
@@ -35,14 +36,14 @@ final class SamplePostType
     /**
      * Register
      *
-     * @internal    Used as a callback. DO NOT CALL THIS METHOD DIRECTLY!
+     * @internal  Used as a callback.
      */
     function _register()
     {
         register_post_type(
             self::TYPE,
-            array(
-                'labels' => array(
+            [
+                'labels' => [
                     'name'          => __('Sample Post Type', 'wp-plugin'),
                     'singular_name' => __('Sample Post Type', 'wp-plugin'),
                     'add_new'       => __('Add New', 'wp-plugin'),
@@ -54,17 +55,17 @@ final class SamplePostType
                     'search_items'  => __('Search', 'wp-plugin'),
                     'not_found'     => __('No Post Found', 'wp-plugin'),
                     'all_items'     => __('All Sample Posts', 'wp-plugin'),
-                )
-            )
+                ]
+            ]
         );
     }
 
     /**
      * Filter updated messages
      *
-     * @internal    Used as a callback. DO NOT CALL THIS METHOD DIRECTLY!
+     * @internal  Used as a callback.
      *
-     * @see    https://developer.wordpress.org/reference/hooks/post_updated_messages/
+     * @see  https://developer.wordpress.org/reference/hooks/post_updated_messages/
      */
     function _filterUpdatedMessages($messages)
     {
