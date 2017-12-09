@@ -1,50 +1,51 @@
-<?php namespace Wp\Plugin\SamplePlugin\Modules;
+<?php namespace Wp\Plugins\SamplePlugin;
+
+use Wp\Plugins\SamplePlugin\Core;
+
 /**
  * SampleMenuPage
  */
-use Wp\Plugin\SamplePlugin as Plugin;
-
 final class SampleMenuPage
 {
     /**
      * Menu slug
      *
-     * @var   string
+     * @var  string
      */
     const SLUG = 'sample-menu-page';
 
     /**
      * Plugin container
      *
-     * @var    object
+     * @var  object
      */
-    private $plugin;
+    private $container;
 
     /**
      * Constructor
      */
-    function __construct(Plugin $plugin)
+    function __construct(Core $container)
     {
-        $this->plugin = $plugin;
+        $this->container = $container;
 
-        add_action('admin_menu', array($this, '_add'));
+        add_action('admin_menu', [$this, '_add']);
     }
 
     /**
      * Add to admin menu
      *
-     * @internal    Used as a callback. DO NOT CALL THIS METHOD DIRECTLY!
+     * @internal  Used as a callback.
      *
-     * @param    string    $context
+     * @param  string  $context
      */
     function _add($context)
     {
         add_menu_page(
-            __('Sample Menu Page', 'wpplugin'),
-            __('Sample Menu Page', 'wpplugin'),
+            __('Sample Menu Page', 'wp-plugin'),
+            __('Sample Menu Page', 'wp-plugin'),
             'manage_options',
             self::SLUG,
-            array($this, '_render'),
+            [$this, '_render'],
             'dashicons-admin-generic',
             89
         );
