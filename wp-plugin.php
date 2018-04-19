@@ -65,9 +65,9 @@ final class Core
         $this->basedir  = __DIR__ . '/';
         $this->baseuri  = str_replace(['http:', 'https:'], '', plugins_url('/', __FILE__));
 
-        add_filter('plugins_loaded', [$this, '_install'], 10, 0);
-        add_filter('activate_wp-plugin/wp-plugin.php', [$this, '_activate']);
-        add_filter('deactivate_wp-plugin/wp-plugin.php', [$this, '_deactivate']);
+        add_action('plugins_loaded', [$this, '_install'], 10, 0);
+        add_action('activate_wp-plugin/wp-plugin.php', [$this, '_activate']);
+        add_action('deactivate_wp-plugin/wp-plugin.php', [$this, '_deactivate']);
     }
 
     /**
