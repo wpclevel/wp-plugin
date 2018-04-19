@@ -151,16 +151,12 @@ final class Core
     private function preActivate()
     {
         if (version_compare(PHP_VERSION, '5.6', '<')) {
-            throw new Exception(sprintf('This plugin requires PHP version %s at least!', '5.6'));
+            throw new Exception('This plugin requires PHP version 5.6 at least!');
         }
 
         if (version_compare($GLOBALS['wp_version'], '4.6', '<')) {
-            throw new Exception(sprintf('This plugin requires WordPress version %s at least!', '4.6'));
+            throw new Exception('This plugin requires WordPress version 4.6 at least!');
         }
-
-        // if (!is_writable(WP_CONTENT_DIR)) {
-        //     throw new Exception('WordPress content directory is not writable. Please correct permission of the directory before activating this plugin!');
-        // }
     }
 }
 
