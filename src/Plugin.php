@@ -122,8 +122,6 @@ final class Plugin
         // Make sure translation is available.
         load_plugin_textdomain('wp-plugin', false, $this->basedir . 'languages');
 
-        var_dump($this->baseuri);
-
         // Load autoloader.
         require $this->basedir . 'src/Helpers/Autoloader.php';
 
