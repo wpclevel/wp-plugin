@@ -2,24 +2,14 @@
 var gulp = require('gulp');
 var sass = require('gulp-sass');
 var rename = require('gulp-rename');
-var sourcemap = require('gulp-sourcemaps');
 var js_minifier = require('gulp-uglify');
 var css_minifier = require('gulp-clean-css');
 
 // Compile css
-gulp.task('css:compile', function()
+gulp.task('css:build', function()
 {
   return gulp.src('assets/sass/*.scss')
-    .pipe(sourcemap.init())
     .pipe(sass({outputStyle: 'expanded'}).on('error', sass.logError))
-    .pipe(sourcemap.write('.'))
-    .pipe(gulp.dest('assets/css'));
-});
-
-// Minify css
-gulp.task('css:build', ['css:compile'], function()
-{
-  return gulp.src(['assets/css/*.css', '!assets/css/*.min.css'])
     .pipe(css_minifier())
     .pipe(rename({suffix: '.min'}))
     .pipe(gulp.dest('assets/css'));
@@ -47,4 +37,4 @@ gulp.task('js:watch', function()
 });
 
 // Default task
-gulp.task('default', ['css:build', 'js:build']);
+gulp.task('default', ['css:watch', 'js:watch']);
