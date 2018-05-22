@@ -90,10 +90,22 @@ final class Plugin
         try {
             $this->preActivate();
         } catch (Exception $e) {
-            exit($e->getMessage());
+            if (defined('DOING_AJAX') && DOING_AJAX) {
+                header('Content-Type: application/json; charset=' . get_option('blog_charset'));
+                status_header(500);
+                exit(json_encode([
+                    'error' => [
+                        'name'    => 'Plugin Activation Error',
+                        'code'    => $e->getCode(),
+                        'message' => $e->getMessage(),
+                    ]
+                ]));
+            } else {
+                exit($e->getMessage());
+            }
         }
 
-        update_option(self::OPTION_NAME, [
+        add_option(self::OPTION_NAME, [
 
         ]);
     }
@@ -113,7 +125,7 @@ final class Plugin
         // Load autoloader.
         require $this->basedir . 'src/Helpers/Autoloader.php';
 
-        // Initialize modules.
+        // Register autoloading.
         Helpers\Autoloader::init()->load(__NAMESPACE__, __DIR__);
     }
 
