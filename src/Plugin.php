@@ -53,7 +53,7 @@ final class Plugin
     {
         $this->modules = ['settings' => new ArrayObject($settings)];
         $this->basedir = dirname(__DIR__) . '/';
-        $this->baseuri = str_replace(['http:', 'https:'], '', plugins_url('/', __FILE__));
+        $this->baseuri = str_replace(['http:', 'https:'], '', plugins_url('/', dirname(__FILE__)));
 
         add_action('plugins_loaded', [$this, '_install'], 10, 0);
         add_action('activate_wp-plugin/wp-plugin.php', [$this, '_activate']);
@@ -121,6 +121,8 @@ final class Plugin
     {
         // Make sure translation is available.
         load_plugin_textdomain('wp-plugin', false, $this->basedir . 'languages');
+
+        var_dump($this->baseuri);
 
         // Load autoloader.
         require $this->basedir . 'src/Helpers/Autoloader.php';
