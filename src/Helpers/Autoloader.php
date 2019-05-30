@@ -1,4 +1,4 @@
-<?php namespace WP\Plugins\SamplePlugin\Helpers;
+<?php namespace WP\Plugins\Foo\Helpers;
 
 use InvalidArgumentException;
 
@@ -24,11 +24,11 @@ final class Autoloader
     private $dir;
 
     /**
-     * Constructor
+     * Nope constructor
      */
     private function __construct()
     {
-        // No reconstruction.
+
     }
 
     /**

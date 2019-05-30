@@ -1,40 +1,41 @@
+/*!
+ * Gulp Worker
+ */
 'use strict';
-var gulp = require('gulp');
-var sass = require('gulp-sass');
-var rename = require('gulp-rename');
-var js_minifier = require('gulp-uglify');
-var css_minifier = require('gulp-clean-css');
+const src = 'assets/'; // Working assets folder which contains sub-folders such as js, css, scss...
+const Gulp = require('gulp');
+const GulpSass = require('gulp-sass');
+const GulpRename = require('gulp-rename');
+const GulpUglify = require('gulp-uglify');
+const GulpCleanCss = require('gulp-clean-css');
 
-// Compile css
-gulp.task('css:build', function()
-{
-  return gulp.src('assets/sass/*.scss')
-    .pipe(sass({outputStyle: 'expanded'}).on('error', sass.logError))
-    .pipe(css_minifier())
-    .pipe(rename({suffix: '.min'}))
-    .pipe(gulp.dest('assets/css'));
-});
+// Compile SCSS to CSS
+Gulp.task('sass:compile', () => Gulp.src([src + 'scss/*.scss'])
+    .pipe(GulpSass({outputStyle: 'expanded'})
+    .on('error', GulpSass.logError))
+    .pipe(Gulp.dest(src + 'css'))
+);
 
-// Watch css
-gulp.task('css:watch', function()
-{
-  return gulp.watch('assets/sass/*.scss', ['css:build']);
-});
+// Minify CSS, make it ready for production.
+Gulp.task('css:minify', () => Gulp.src([src + 'css/*.css', '!' + src + 'css/*.min.css'])
+    .pipe(GulpCleanCss())
+    .pipe(GulpRename({suffix: '.min'}))
+    .pipe(Gulp.dest(src + 'css'))
+);
 
-// Minify js
-gulp.task('js:build', function()
-{
-  return gulp.src(['assets/js/*.js', '!assets/js/*.min.js'])
-    .pipe(js_minifier()).on('error', function(err){console.error('Error', err.toString());})
-    .pipe(rename({suffix: '.min'}))
-    .pipe(gulp.dest('assets/js'));
-});
+// SCSS observer.
+Gulp.task('sass:watch', () => Gulp.watch(src + 'scss/*.scss', Gulp.series('sass:compile', 'css:minify')));
 
-// Watch css
-gulp.task('js:watch', function()
-{
-  return gulp.watch(['assets/js/*.js', '!assets/js/*.min.js'], ['js:build']);
-});
+// Minify JS, make it ready for production.
+Gulp.task('js:minify', () => Gulp.src([src + 'js/*.js', '!' + src + 'js/*.min.js'])
+    .pipe(GulpUglify())
+    .on('error', e => console.error(e.toString()))
+    .pipe(GulpRename({suffix: '.min'}))
+    .pipe(Gulp.dest(src + 'js'))
+);
 
-// Default task
-gulp.task('default', ['css:watch', 'js:watch']);
+// JS observer.
+Gulp.task('js:watch', () => Gulp.watch([src + 'js/*.js', '!' + src + 'js/*.min.js'], Gulp.series('js:minify')));
+
+// Default
+Gulp.task('default', Gulp.parallel('sass:watch', 'js:watch'));

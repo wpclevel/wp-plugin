@@ -1,4 +1,4 @@
-<?php namespace WP\Plugins\SamplePlugin;
+<?php namespace WP\Plugins\Foo;
 
 /**
  * SamplePostType
