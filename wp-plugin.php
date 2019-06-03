@@ -107,7 +107,7 @@ final class Plugin
         require __DIR__ . '/src/Helpers/Autoloader.php';
 
         // Register autoloading.
-        Helpers\Autoloader::init()->load(__NAMESPACE__, __DIR__);
+        Helpers\Autoloader::init()->load(__NAMESPACE__, __DIR__ . '/src');
     }
 
     /**
