@@ -139,7 +139,7 @@ final class Plugin
             throw new Exception(__('This plugin requires WordPress version 4.7 at least!', 'wp-plugin'));
         }
 
-        // if (!defined(WP_CONTENT_DIR) || !is_writable(WP_CONTENT_DIR)) {
+        // if (!defined('WP_CONTENT_DIR') || !is_writable(WP_CONTENT_DIR)) {
         //     throw new Exception(__('WordPress content directory is undefined or not writable.', 'wp-plugin'));
         // }
     }
