@@ -11,8 +11,6 @@
  */
 
 use Exception;
-use ArrayObject;
-use InvalidArgumentException;
 
 /**
  * Plugin container.
@@ -103,11 +101,8 @@ final class Plugin
         // Make sure translation is available.
         load_plugin_textdomain('wp-plugin', false, __DIR__ . '/languages');
 
-        // Load autoloader.
-        require __DIR__ . '/src/Helpers/Autoloader.php';
-
         // Register autoloading.
-        Helpers\Autoloader::init()->load(__NAMESPACE__, __DIR__ . '/src');
+        $this->registerAutoloading();
     }
 
     /**
@@ -122,6 +117,29 @@ final class Plugin
     function _deactivate($network)
     {
 
+    }
+
+    /**
+     * Register autoloading
+     *
+     * Register PSR4 classes autoloading base on current namespace and `src` directory as bases.
+     */
+    private function registerAutoloading()
+    {
+        spl_autoload_register(function($class) {
+            if (0 !== strpos($class, __NAMESPACE__)) {
+                return; // Not in my job description.
+            }
+
+            $path = str_replace(__NAMESPACE__, __DIR__ . '/src', $class);
+            $file = str_replace('\\', '/', $path) . '.php';
+
+            if (file_exists($file)) {
+                require $file;
+            } else {
+                throw new Exception(sprintf(__('Autoloading failed. Class "%s" not found.', 'wp-plugin'), $class));
+            }
+        }, true, false);
     }
 
     /**
