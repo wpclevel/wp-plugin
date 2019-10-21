@@ -1,7 +1,7 @@
-<?php namespace WPPlugin;
+<?php namespace SamplePlugin;
 
 /**
- * Plugin Name: WP Plugin
+ * Plugin Name: Sample Plugin
  * Plugin URI:  https://sarahcoding.com/wp-plugin-sample
  * Description: My WordPress plugin boilerplate.
  * Author:      SarahCoding
@@ -29,7 +29,7 @@ final class Plugin
      *
      * @var  string
      */
-    const OPTION_NAME = 'wp_plugin_settings';
+    const OPTION_NAME = 'sample_plugin_settings';
 
     /**
      * Settings
@@ -94,8 +94,8 @@ final class Plugin
     function _install()
     {
         // Define useful constants.
-        define('WP_PLUGIN_DIR', __DIR__ . '/');
-        define('WP_PLUGIN_URI', str_replace(['http:', 'https:'], '', plugins_url('/', __FILE__)));
+        define('SAMPLE_PLUGIN_DIR', __DIR__ . '/');
+        define('SAMPLE_PLUGIN_URI', str_replace(['http:', 'https:'], '', plugins_url('/', __FILE__)));
 
         // Make sure translation is available.
         load_plugin_textdomain('wp-plugin', false, __DIR__ . '/languages');
