@@ -1,4 +1,4 @@
-<?php namespace WP\Plugins\SamplePlugin\Backend\MenuPages;
+<?php namespace WP\Plugins\Foo\Admin\MenuPages;
 
 use InvalidArgumentException;
 
