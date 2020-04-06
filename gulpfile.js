@@ -1,36 +1,39 @@
 /*!
  * Gulp Worker
  */
-'use strict';
-const src = 'assets/'; // Working folder which contains sub-folders such as js, css, scss...
-const Gulp = require('gulp');
-const GulpSass = require('gulp-sass');
-const GulpRename = require('gulp-rename');
-const GulpUglify = require('gulp-uglify');
-const GulpCleanCss = require('gulp-clean-css');
+const env = 'development';
+const src = 'assets/'; // Working assets folder (contains /js, /css, /scss, /fonts and /images).
+const gulp = require('gulp');
+const gulpIf = require('gulp-if');
+const gulpSass = require('gulp-sass');
+const gulpRename = require('gulp-rename');
+const gulpUglify = require('gulp-uglify-es').default;
 
 // Build CSS.
-Gulp.task('css:minify', () => Gulp.src([src + 'css/*.css', '!' + src + 'css/*.min.css'])
-    .pipe(GulpSass({outputStyle: 'expanded'})
-    .on('error', GulpSass.logError))
-    .pipe(GulpCleanCss())
-    .pipe(GulpRename({suffix: '.min'}))
-    .pipe(Gulp.dest(src + 'css'))
+gulp.task('css:build', () => gulp.src([src + 'scss/**/*.scss'])
+    .pipe(gulpSass({
+        outputStyle: 'compressed'
+    }).on('error', gulpSass.logError))
+    .pipe(gulpRename({
+        suffix: '.min'
+    }))
+    .pipe(gulp.dest(src + 'css'))
 );
 
-// Watch SCSS.
-Gulp.task('sass:watch', () => Gulp.watch(src + 'scss/*.scss', Gulp.series('sass:compile', 'css:minify')));
+// Observe SCSS.
+gulp.task('css:watch', () => gulp.watch(src + 'scss/**/*.scss', gulp.series('css:build')));
 
-// Build JS .
-Gulp.task('js:minify', () => Gulp.src([src + 'js/*.js', '!' + src + 'js/*.min.js'])
-    .pipe(GulpUglify())
-    .on('error', e => console.error(e.toString()))
-    .pipe(GulpRename({suffix: '.min'}))
-    .pipe(Gulp.dest(src + 'js'))
+// Build JS
+gulp.task('js:build', () => gulp.src([src + 'js/**/*.js', '!' + src + 'js/**/*.min.js'])
+    .pipe(gulpIf('production' === env, gulpUglify()))
+    .pipe(gulpRename({
+        suffix: '.min'
+    }))
+    .pipe(gulp.dest(src + 'js'))
 );
 
-// Watch JS.
-Gulp.task('js:watch', () => Gulp.watch([src + 'js/*.js', '!' + src + 'js/*.min.js'], Gulp.series('js:minify')));
+// Observe JS.
+gulp.task('js:watch', () => gulp.watch([src + 'js/**/*.js', '!' + src + 'js/**/*.min.js'], gulp.series('js:build')));
 
 // Default
-Gulp.task('default', Gulp.parallel('sass:watch', 'js:watch'));
+gulp.task('default', gulp.parallel('css:watch', 'js:watch'));
