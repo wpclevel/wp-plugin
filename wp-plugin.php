@@ -1,10 +1,10 @@
-<?php namespace SamplePlugin;
+<?php namespace WPPlugin;
 
 /**
- * Plugin Name: Sample Plugin
- * Plugin URI:  https://sarahcoding.com/wp-plugin-sample
+ * Plugin Name: WP Plugin
+ * Plugin URI:  https://github.com/i30/wp-plugin
  * Description: My WordPress plugin boilerplate.
- * Author:      SarahCoding
+ * Author:      i30
  * Version:     1.0.0
  * Text Domain: wp-plugin
  * Requires PHP: 7.2
@@ -29,7 +29,7 @@ final class Plugin
      *
      * @var  string
      */
-    const OPTION_NAME = 'sample_plugin_settings';
+    const OPTION_NAME = 'wp_plugin_settings';
 
     /**
      * Settings
@@ -80,7 +80,7 @@ final class Plugin
         }
 
         add_option(self::OPTION_NAME, [
-            'flushed_rewrite_rules' => false
+            // 'flushed_rewrite_rules' => false
         ]);
     }
 
@@ -94,11 +94,11 @@ final class Plugin
     function _install()
     {
         // Define useful constants.
-        define('SAMPLE_PLUGIN_DIR', __DIR__ . '/');
-        define('SAMPLE_PLUGIN_URI', str_replace(['http:', 'https:'], '', plugins_url('/', __FILE__)));
+        define('THIS_PLUGIN_DIR', __DIR__ . '/');
+        define('THIS_PLUGIN_URI', plugins_url('/', __FILE__));
 
         // Make sure translation is available.
-        load_plugin_textdomain('wp-plugin', false, __DIR__ . '/languages');
+        load_plugin_textdomain('wp-plugin', false, dirname(plugin_basename(__FILE__)) . '/languages');
 
         // Register autoloading.
         $this->registerAutoloading();
@@ -121,7 +121,7 @@ final class Plugin
     /**
      * Register autoloading
      *
-     * Register PSR4 classes autoloading base on current namespace and `src` directory as bases.
+     * Register PSR4 classes autoloading base on current namespace and `src` directory as base.
      */
     private function registerAutoloading()
     {
