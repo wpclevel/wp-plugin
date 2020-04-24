@@ -29,7 +29,7 @@ final class Plugin
      *
      * @var  string
      */
-    const OPTION_NAME = 'wp_plugin_settings';
+    const SETTINGS_KEY = 'wp_plugin_settings';
 
     /**
      * Settings
@@ -40,12 +40,14 @@ final class Plugin
 
     /**
      * Constructor
+     *
+     * @param array $settings Default settings
      */
     function __construct(array $settings = [])
     {
-        $this->settings = array_merge([
-            'flushed_rewrite_rules' => false
-        ], $settings);
+        $this->settings = array_replace_recursive(
+            $settings, (array)get_option(self::SETTINGS_KEY, [])
+        );
 
         add_action('plugins_loaded', [$this, '_install'], 10, 0);
         add_action('activate_wp-plugin/wp-plugin.php', [$this, '_activate']);
@@ -79,9 +81,10 @@ final class Plugin
             }
         }
 
-        add_option(self::OPTION_NAME, [
-            // 'flushed_rewrite_rules' => false
-        ]);
+        // Maybe add default settings.
+        // add_option(self::SETTINGS_KEY, [
+        //
+        // ]);
     }
 
     /**
@@ -98,7 +101,7 @@ final class Plugin
         define('THIS_PLUGIN_URI', plugins_url('/', __FILE__));
 
         // Make sure translation is available.
-        load_plugin_textdomain('wp-plugin', false, dirname(plugin_basename(__FILE__)) . '/languages');
+        load_plugin_textdomain('wp-plugin', false, basename(__DIR__) . '/languages');
 
         // Register autoloading.
         $this->registerAutoloading();
@@ -163,4 +166,4 @@ final class Plugin
 }
 
 // Initialize plugin.
-return new Plugin(get_option(Plugin::OPTION_NAME, []));
+return new Plugin();
