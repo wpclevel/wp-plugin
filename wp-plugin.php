@@ -129,7 +129,7 @@ final class Plugin
     private function registerAutoloading()
     {
         spl_autoload_register(function($class) {
-            if (0 !== strpos($class, __NAMESPACE__)) {
+            if (0 !== strpos($class, __NAMESPACE__ . '\\')) {
                 return; // Not in my job description :)
             }
 
