@@ -139,6 +139,7 @@ final class Plugin
             if (file_exists($file)) {
                 require $file;
             } else {
+                /* translators: %s: loading class. */
                 throw new Exception(sprintf(__('Autoloading failed. Class "%s" not found.', 'wp-plugin'), $class));
             }
         }, true, false);
