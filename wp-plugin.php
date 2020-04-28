@@ -1,5 +1,4 @@
-<?php namespace WPPlugin;
-
+<?php
 /**
  * Plugin Name: WP Plugin
  * Plugin URI:  https://github.com/i30/wp-plugin
@@ -8,163 +7,82 @@
  * Version:     1.0.0
  * Text Domain: wp-plugin
  * Requires PHP: 7.2
+ * Requires at least: 5.2
+ * Tested up to: 5.4
  */
-
-use Exception;
 
 /**
- * Plugin container.
+ * Pre-activation check
  */
-final class Plugin
+function wp_plugin_pre_activation()
 {
-    /**
-     * Version
-     *
-     * @var  string
-     */
-    const VERSION = '1.0.0';
-
-    /**
-     * Option key
-     *
-     * @var  string
-     */
-    const SETTINGS_KEY = 'wp_plugin_settings';
-
-    /**
-     * Settings
-     *
-     * @var array
-     */
-    private $settings;
-
-    /**
-     * Constructor
-     *
-     * @param array $settings Default settings
-     */
-    function __construct(array $settings = [])
-    {
-        $this->settings = array_replace_recursive(
-            $settings, (array)get_option(self::SETTINGS_KEY, [])
-        );
-
-        add_action('plugins_loaded', [$this, '_install'], 10, 0);
-        add_action('activate_wp-plugin/wp-plugin.php', [$this, '_activate']);
-        add_action('deactivate_wp-plugin/wp-plugin.php', [$this, '_deactivate']);
+    if (version_compare(PHP_VERSION, '7.2', '<')) {
+        throw new Exception(__('This plugin requires PHP version 7.2 at least!', 'textdomain'));
     }
 
-    /**
-     * Do activation
-     *
-     * @internal  Used as a callback.
-     *
-     * @see  https://developer.wordpress.org/reference/functions/register_activation_hook/
-     *
-     * @param  bool  $network  Whether to activate this plugin on network or a single site.
-     */
-    function _activate($network)
-    {
-        try {
-            $this->preActivate();
-        } catch (Exception $e) {
-            if (defined('DOING_AJAX') && DOING_AJAX) {
-                header('Content-Type: application/json; charset=' . get_option('blog_charset'));
-                status_header(500);
-                exit(json_encode([
-                    'success' => false,
-                    'name'    => __('Plugin Activation Error', 'wp-plugin'),
-                    'message' => $e->getMessage()
-                ]));
-            } else {
-                exit($e->getMessage());
-            }
-        }
-
-        // Maybe add default settings.
-        // add_option(self::SETTINGS_KEY, [
-        //
-        // ]);
+    if (version_compare($GLOBALS['wp_version'], '5.2', '<')) {
+        throw new Exception(__('This plugin requires WordPress version 5.2 at least!', 'textdomain'));
     }
 
-    /**
-     * Do installation
-     *
-     * @internal  Used as a callback.
-     *
-     * @see  https://developer.wordpress.org/reference/hooks/plugins_loaded/
-     */
-    function _install()
-    {
-        // Define useful constants.
-        define('THIS_PLUGIN_DIR', __DIR__ . '/');
-        define('THIS_PLUGIN_URI', plugins_url('/', __FILE__));
-
-        // Make sure translation is available.
-        load_plugin_textdomain('wp-plugin', false, basename(__DIR__) . '/languages');
-
-        // Register autoloading.
-        $this->registerAutoloading();
-    }
-
-    /**
-     * Do deactivation
-     *
-     * @internal  Used as a callback.
-     *
-     * @see  https://developer.wordpress.org/reference/functions/register_deactivation_hook/
-     *
-     * @param  bool  $network  Whether to deactivate this plugin on network or a single site.
-     */
-    function _deactivate($network)
-    {
-
-    }
-
-    /**
-     * Register autoloading
-     *
-     * Register PSR4 classes autoloading base on current namespace and `src` directory as base.
-     */
-    private function registerAutoloading()
-    {
-        spl_autoload_register(function($class) {
-            if (0 !== strpos($class, __NAMESPACE__ . '\\')) {
-                return; // Not in my job description :)
-            }
-
-            $path = str_replace(__NAMESPACE__, __DIR__ . '/src', $class);
-            $file = str_replace('\\', '/', $path) . '.php';
-
-            if (file_exists($file)) {
-                require $file;
-            } else {
-                /* translators: %s: loading class. */
-                throw new Exception(sprintf(__('Autoloading failed. Class "%s" not found.', 'wp-plugin'), $class));
-            }
-        }, true, false);
-    }
-
-    /**
-     * Pre-activation check
-     *
-     * @throws  Exception
-     */
-    private function preActivate()
-    {
-        if (version_compare(PHP_VERSION, '7.2', '<')) {
-            throw new Exception(__('This plugin requires PHP version 7.2 at least!', 'wp-plugin'));
-        }
-
-        if (version_compare($GLOBALS['wp_version'], '5.2', '<')) {
-            throw new Exception(__('This plugin requires WordPress version 5.2 at least!', 'wp-plugin'));
-        }
-
-        if (!defined('WP_CONTENT_DIR') || !is_writable(WP_CONTENT_DIR)) {
-            throw new Exception(__('WordPress content directory is inaccessible.', 'wp-plugin'));
-        }
+    if (!defined('WP_CONTENT_DIR') || !is_writable(WP_CONTENT_DIR)) {
+        throw new Exception(__('WordPress content directory is inaccessible.', 'textdomain'));
     }
 }
 
-// Initialize plugin.
-return new Plugin();
+/**
+ * Do activation
+ *
+ * @see https://developer.wordpress.org/reference/functions/register_activation_hook/
+ */
+function wp_plugin_activate($network)
+{
+    try {
+        wp_plugin_pre_activation();
+    } catch (Exception $e) {
+        if (defined('DOING_AJAX') && DOING_AJAX) {
+            header('Content-Type: application/json; charset=' . get_option('blog_charset'));
+            status_header(500);
+            exit(json_encode([
+                'success' => false,
+                'name'    => __('Plugin Activation Error', 'textdomain'),
+                'message' => $e->getMessage()
+            ]));
+        } else {
+            exit($e->getMessage());
+        }
+    }
+
+    // Maybe add default settings.
+    // add_option(self::SETTINGS_KEY, [
+    //
+    // ]);
+}
+register_activation_hook(__FILE__, 'wp_plugin_activate');
+
+/**
+ * Do installation
+ *
+ * @see https://developer.wordpress.org/reference/hooks/plugins_loaded/
+ */
+function wp_plugin_install()
+{
+    // Useful constants.
+    define('WP_PLUGIN_DIR', __DIR__ . '/');
+    define('WP_PLUGIN_URI', plugins_url('/', __FILE__));
+    define('WP_PLUGIN_VERSION', '1.0.0');
+
+    // Make sure translation is available.
+    load_plugin_textdomain('textdomain', false, basename(__DIR__) . '/languages');
+}
+add_action('plugins_loaded', 'wp_plugin_install', 10, 0);
+
+/**
+ * Do deactivation
+ *
+ * @see https://developer.wordpress.org/reference/functions/register_deactivation_hook/
+ */
+function wp_plugin_deactivate($network)
+{
+    // Do something
+}
+register_activation_hook(__FILE__, 'wp_plugin_deactivate');
