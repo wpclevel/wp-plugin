@@ -1,10 +1,11 @@
 <?php
 /**
  * Plugin Name: WP Plugin
- * Plugin URI:  https://github.com/i30/wp-plugin
+ * Plugin URI: https://sarahcoding.com/wordpress-plugin/wp-plugin
  * Description: My WordPress plugin boilerplate.
- * Author:      i30
- * Version:     1.0.0
+ * Author: SarahCoding
+ * Author URI: https://sarahcoding.com
+ * Version: 1.0.0
  * Text Domain: wp-plugin
  * Requires PHP: 7.2
  * Requires at least: 5.2
@@ -69,7 +70,7 @@ function wp_plugin_install()
     // Useful constants.
     define('WP_PLUGIN_DIR', __DIR__ . '/');
     define('WP_PLUGIN_URI', plugins_url('/', __FILE__));
-    define('WP_PLUGIN_VERSION', '1.0.0');
+    define('WP_PLUGIN_VER', '1.0.0');
 
     // Make sure translation is available.
     load_plugin_textdomain('textdomain', false, basename(__DIR__) . '/languages');
