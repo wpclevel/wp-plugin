@@ -1,34 +1,19 @@
 <?php
 /**
  * Plugin Name: WP Plugin
- * Plugin URI: https://sarahcoding.com/wordpress-plugin/wp-plugin
+ * Plugin URI: #
  * Description: My WordPress plugin boilerplate.
- * Author: SarahCoding
- * Author URI: https://sarahcoding.com
+ * Author: #
+ * Author URI: #
  * Version: 1.0.0
  * Text Domain: wp-plugin
- * Requires PHP: 7.2
- * Requires at least: 5.2
- * Tested up to: 5.4
+ * Tested up to: 5.5
  */
 
-/**
- * Pre-activation check
- */
-function wp_plugin_pre_activation()
-{
-    if (version_compare(PHP_VERSION, '7.2', '<')) {
-        throw new Exception(__('This plugin requires PHP version 7.2 at least!', 'textdomain'));
-    }
-
-    if (version_compare($GLOBALS['wp_version'], '5.2', '<')) {
-        throw new Exception(__('This plugin requires WordPress version 5.2 at least!', 'textdomain'));
-    }
-
-    if (!defined('WP_CONTENT_DIR') || !is_writable(WP_CONTENT_DIR)) {
-        throw new Exception(__('WordPress content directory is inaccessible.', 'textdomain'));
-    }
-}
+// Useful constants.
+define('WP_PLUGIN_DIR', __DIR__ . '/');
+define('WP_PLUGIN_URI', plugins_url('/', __FILE__));
+define('WP_PLUGIN_VER', '1.0.0');
 
 /**
  * Do activation
@@ -38,7 +23,17 @@ function wp_plugin_pre_activation()
 function wp_plugin_activate($network)
 {
     try {
-        wp_plugin_pre_activation();
+        if (version_compare(PHP_VERSION, '7.2', '<')) {
+            throw new Exception(__('This plugin requires PHP version 7.2 at least!', 'textdomain'));
+        }
+
+        if (version_compare($GLOBALS['wp_version'], '5.2', '<')) {
+            throw new Exception(__('This plugin requires WordPress version 5.2 at least!', 'textdomain'));
+        }
+
+        if (!defined('WP_CONTENT_DIR') || !is_writable(WP_CONTENT_DIR)) {
+            throw new Exception(__('WordPress content directory is inaccessible.', 'textdomain'));
+        }
     } catch (Exception $e) {
         if (defined('DOING_AJAX') && DOING_AJAX) {
             header('Content-Type: application/json; charset=' . get_option('blog_charset'));
@@ -54,7 +49,7 @@ function wp_plugin_activate($network)
     }
 
     // Maybe add default settings.
-    // add_option(self::SETTINGS_KEY, [
+    // add_option({$settings_key}, [
     //
     // ]);
 }
@@ -67,13 +62,10 @@ register_activation_hook(__FILE__, 'wp_plugin_activate');
  */
 function wp_plugin_install()
 {
-    // Useful constants.
-    define('WP_PLUGIN_DIR', __DIR__ . '/');
-    define('WP_PLUGIN_URI', plugins_url('/', __FILE__));
-    define('WP_PLUGIN_VER', '1.0.0');
-
     // Make sure translation is available.
     load_plugin_textdomain('textdomain', false, basename(__DIR__) . '/languages');
+
+    // Load resources
 }
 add_action('plugins_loaded', 'wp_plugin_install', 10, 0);
 
