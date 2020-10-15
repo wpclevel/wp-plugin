@@ -1,5 +1,4 @@
-const path = require('path'),
-    MiniCSS = require('mini-css-extract-plugin');
+const path = require('path'), MinCSS = require('mini-css-extract-plugin');
 
 module.exports = {
   mode: 'production',
@@ -12,7 +11,7 @@ module.exports = {
     filename: '[name].min.js'
   },
   plugins: [
-    new MiniCSS({
+    new MinCSS({
       filename: '../css/[name].min.css'
     }),
   ],
@@ -27,7 +26,7 @@ module.exports = {
         test: /\.scss$/,
         use: [
           {
-            loader: MiniCSS.loader,
+            loader: MinCSS.loader,
             options: {
               hmr: false
             },

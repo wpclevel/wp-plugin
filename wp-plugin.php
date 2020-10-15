@@ -63,7 +63,7 @@ register_activation_hook(__FILE__, 'wp_plugin_activate');
 function wp_plugin_install()
 {
     // Make sure translation is available.
-    load_plugin_textdomain('textdomain', false, basename(__DIR__) . '/languages');
+    load_plugin_textdomain('textdomain', false, 'wp-plugin/languages');
 
     // Load resources
 }
