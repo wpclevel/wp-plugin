@@ -1,13 +1,13 @@
 <?php
 /**
  * Plugin Name: WP Plugin
- * Plugin URI: #
- * Description: My WordPress plugin boilerplate.
- * Author: #
- * Author URI: #
+ * Plugin URI: https://github.com/wpcleveldotcom/wp-plugin
+ * Description: A WordPress plugin boilerplate.
+ * Author: WP Clevel
+ * Author URI: https://wpclevel.com
  * Version: 1.0.0
  * Text Domain: wp-plugin
- * Tested up to: 5.5
+ * Tested up to: 5.7
  */
 
 // Useful constants.

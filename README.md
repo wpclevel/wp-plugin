@@ -1,3 +1,3 @@
 # WP Plugin
 
-My WordPress plugin boilerplate.
+WP Clevel's WordPress plugin boilerplate.
