@@ -78,4 +78,4 @@ function wp_plugin_deactivate($network)
 {
     // Do something
 }
-register_activation_hook(__FILE__, 'wp_plugin_deactivate');
+register_deactivation_hook(__FILE__, 'wp_plugin_deactivate');
